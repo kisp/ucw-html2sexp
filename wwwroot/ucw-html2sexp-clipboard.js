@@ -1,7 +1,7 @@
-// Copy-to-clipboard buttons:
-//   <button class="copy-btn" data-copy-target="ELEMENT_ID">
-//     ... <span class="copy-btn-label">Copy</span></button>
-// Clicking copies the textContent of #ELEMENT_ID and briefly shows "Copied!".
+// Copy-to-clipboard via event DELEGATION, so it keeps working for the copy
+// button that Unpoly swaps into #h2s-app after each conversion (a per-button
+// listener wired at load would not catch swapped-in buttons):
+//   <button class="copy-btn" data-copy-target="ID">..<span class="copy-btn-label">Copy</span></button>
 (function () {
   function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -9,44 +9,27 @@
     }
     return new Promise(function (resolve, reject) {
       var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
       try { document.execCommand('copy'); resolve(); }
       catch (e) { reject(e); }
       finally { document.body.removeChild(ta); }
     });
   }
-
-  // Run FN once the DOM is parsed — immediately if it already is, so a
-  // cached/async script load that executes after DOMContentLoaded still wires
-  // up the copy buttons (a bare listener would miss the already-fired event).
-  function whenReady(fn) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', fn);
-    } else {
-      fn();
-    }
-  }
-
-  whenReady(function () {
-    document.querySelectorAll('.copy-btn[data-copy-target]').forEach(function (btn) {
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.copy-btn[data-copy-target]');
+    if (!btn) return;
+    var el = document.getElementById(btn.getAttribute('data-copy-target'));
+    if (!el) return;
+    copyText(el.textContent).then(function () {
       var label = btn.querySelector('.copy-btn-label');
       var orig = label ? label.textContent : null;
-      btn.addEventListener('click', function () {
-        var el = document.getElementById(btn.getAttribute('data-copy-target'));
-        if (!el) return;
-        copyText(el.textContent).then(function () {
-          btn.classList.add('copied');
-          if (label) label.textContent = 'Copied!';
-          setTimeout(function () {
-            btn.classList.remove('copied');
-            if (label) label.textContent = orig;
-          }, 1500);
-        });
-      });
+      btn.classList.add('copied');
+      if (label) label.textContent = 'Copied!';
+      setTimeout(function () {
+        btn.classList.remove('copied');
+        if (label) label.textContent = orig;
+      }, 1500);
     });
   });
 })();

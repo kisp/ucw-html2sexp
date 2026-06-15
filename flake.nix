@@ -31,6 +31,8 @@
             !*.lisp-expr
             !wwwroot/
             !wwwroot/**
+            !test/
+            !test/**
           '';
         in
         pkgs.nix-gitignore.gitignoreSourcePure patterns ./.;
@@ -83,10 +85,23 @@
               html2sexp
             ];
           };
+
+          ucw-html2sexp-test = pkgs.sbcl.buildASDFSystem {
+            pname = "ucw-html2sexp-test";
+            version = "master";
+            inherit src;
+            systems = [ "ucw-html2sexp-test" ];
+            lispLibs = with selfLisp; [
+              ucw-html2sexp
+              html2sexp
+              myam
+            ];
+          };
         }
       );
 
       lib = sbcl'.withPackages (ps: [ ps.ucw-html2sexp ]);
+      libTest = sbcl'.withPackages (ps: [ ps.ucw-html2sexp ps.ucw-html2sexp-test ]);
     in
     {
       packages.${system} = {
@@ -98,6 +113,15 @@
         # nix flake check builds checks.* (packages.* are only evaluated), so
         # build the app system here as the compile gate.
         build = lib;
+
+        # Run the myam unit tests (the h2s-unfold document-unwrapping logic).
+        tests = pkgs.runCommand "ucw-html2sexp-tests" { } ''
+          ${libTest}/bin/sbcl --non-interactive \
+            --eval '(require "asdf")' \
+            --eval '(asdf:load-system :ucw-html2sexp-test)' \
+            --eval '(uiop:quit (if (funcall (read-from-string "myam:run!") :ucw-html2sexp-test) 0 1))'
+          touch $out
+        '';
       };
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
