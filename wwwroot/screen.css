@@ -1,0 +1,465 @@
+/* Mindful Routine Planner custom styles */
+
+article article {
+  margin-top: 0.5rem;
+}
+
+details summary {
+  cursor: pointer;
+}
+
+code {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+mark {
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+}
+
+/* Constraint pills */
+.constraint-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.constraint-tag {
+  display: inline-block;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+span.constraint-tag {
+  background: var(--pico-muted-background-color, #e8e8e8);
+  color: var(--pico-muted-color, #555);
+  border: 1px solid var(--pico-muted-border-color, #ccc);
+}
+
+[data-theme="dark"] span.constraint-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--pico-muted-color, #aaa);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+mark.constraint-tag {
+  border-radius: 999px;
+}
+
+/* A little breathing room between the constraint pills and the
+   Automation script disclosure on the task card. */
+.automation-details {
+  margin-top: 0.75rem;
+}
+
+/* Manual time tracking block on a scriptless task card (issue #43). */
+.time-tracking {
+  margin-top: 0.75rem;
+}
+.time-tracking p {
+  margin-bottom: 0.25rem;
+}
+
+/* Keep the right-side header controls (New task · toggle · ☰) on one
+   vertical centre line. */
+header.container-fluid nav > ul:last-child {
+  align-items: center;
+}
+header.container-fluid nav > ul:last-child > li {
+  display: inline-flex;
+  align-items: center;
+}
+.mrp-theme-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Responsive header: on mobile, "New task" folds into the hamburger menu
+   (the theme toggle stays visible in the bar). */
+@media (max-width: 768px) {
+  .nav-desktop-only {
+    display: none !important;
+  }
+}
+@media (min-width: 769px) {
+  .nav-mobile-only {
+    display: none !important;
+  }
+}
+
+/* Header hamburger menu (Pico dropdown) */
+.app-menu {
+  margin-bottom: 0; /* cancel Pico's default <details> bottom margin in the nav */
+}
+
+/* A plain, borderless icon — no Pico button chrome. */
+details.app-menu.dropdown > summary.app-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.25rem;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--pico-primary);
+}
+
+details.app-menu.dropdown > summary.app-menu-trigger:hover {
+  color: var(--pico-primary-hover, var(--pico-primary));
+}
+
+/* The ☰ glyph is the affordance — drop Pico's extra dropdown caret. */
+details.app-menu.dropdown > summary.app-menu-trigger::after {
+  display: none;
+}
+
+/* Open the menu toward the left so it never overflows the right edge. */
+details.app-menu.dropdown > ul {
+  right: 0;
+  left: auto;
+}
+
+/* Task action links (Reschedule / Edit / Delete) */
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+/* Copy-to-clipboard button (e.g. the run command block) */
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-primary);
+  background: transparent;
+  color: var(--pico-primary);
+  cursor: pointer;
+}
+
+.copy-btn svg {
+  flex: none;
+}
+
+.copy-btn:hover {
+  background: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+}
+
+.copy-btn.copied {
+  border-color: #2d9e5c;
+  color: #2d9e5c;
+  background: transparent;
+}
+
+/* About page */
+.about-card {
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.about-title {
+  margin-bottom: 0.75rem;
+}
+
+.about-lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--pico-muted-color);
+  margin-bottom: 1.5rem;
+}
+
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.about-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--pico-border-radius);
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.about-btn svg {
+  flex: none;
+}
+
+.about-btn-primary {
+  background: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+}
+
+.about-btn-primary:hover {
+  background: var(--pico-primary-hover-background);
+}
+
+.about-btn-secondary {
+  border-color: var(--pico-primary);
+  color: var(--pico-primary);
+}
+
+.about-btn-secondary:hover {
+  background: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+}
+
+/* Calendar editor */
+.cal-month {
+  margin-bottom: 1.5rem;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 2.5rem);
+  gap: 2px;
+  font-size: 0.85rem;
+}
+
+.cal-hdr {
+  text-align: center;
+  font-weight: 600;
+  padding: 0.2rem;
+  opacity: 0.5;
+}
+
+.cal-day {
+  text-align: center;
+  padding: 0.2rem;
+  border-radius: 0.25rem;
+}
+
+.cal-before {
+  color: #bbb;
+}
+
+.cal-invalid {
+  color: #bbb;
+  text-decoration: line-through;
+}
+
+.cal-valid {
+  cursor: pointer;
+}
+
+.cal-valid a {
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.cal-current {
+  background: #4a90d9;
+  color: white;
+  cursor: default;
+  border-radius: 50%;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.mrp-theme-btn,
+.mrp-theme-btn:hover {
+  text-decoration: none;
+}
+
+.cal-today {
+  border: 2px solid #888;
+  border-radius: 50%;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 auto;
+}
+
+/* Compact schedule view (issue #18): the header toggle and the denser layout
+   it switches on.  Detail is dropped from each task card so far more of the
+   schedule fits on one screen; a still-running automation keeps its pending
+   "running since" line, which is the part worth seeing at a glance. */
+.mrp-compact-btn,
+.mrp-compact-btn:hover {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.mrp-compact .task-card > p,
+.mrp-compact .task-card .constraint-tags,
+.mrp-compact .task-card .task-actions,
+.mrp-compact .task-card .automation-details:not(.automation-pending) {
+  display: none;
+}
+
+.mrp-compact .task-card {
+  margin-top: 0.3rem;
+  padding-block: 0.45rem;
+}
+
+.mrp-compact .task-card > header {
+  margin-bottom: 0;
+  padding-block: 0.25rem;
+  border-bottom: none;
+}
+
+.mrp-compact .task-card .automation-details {
+  margin-top: 0.3rem;
+}
+
+/* Per-task Run/Continue affordance (issue #29): hidden in the detailed view
+   (which has the full automation disclosure), shown only in compact so a run
+   can be started without leaving the dense view. */
+.compact-run-action {
+  display: none;
+  align-items: center;
+  color: var(--pico-primary);
+  text-decoration: none;
+}
+.compact-run-action:hover {
+  color: var(--pico-primary-hover, var(--pico-primary));
+}
+.compact-run-action svg {
+  display: block;
+}
+.mrp-compact .compact-run-action {
+  display: inline-flex;
+}
+
+/* Constraints list page (issue #39) */
+.constraint-ok {
+  color: #2d9e5c;
+  font-weight: 600;
+}
+.constraint-no-tasks {
+  color: var(--pico-muted-color);
+}
+.constraint-task-list {
+  margin-bottom: 0;
+}
+/* Per-constraint actions (Delete) on the Constraints page (issue #44). */
+.constraint-actions {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+/* Schedule filter bar (issue #57): single search box + "Due today" toggle. */
+.task-meta {
+  display: none;
+}
+.mrp-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; /* vertically centre every control (issue #61) */
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+/* Give the search input and the button the SAME, compact height so the row
+   reads as one aligned control — the default Pico search input is otherwise a
+   tall pill that dwarfs the button (issue #61). */
+.mrp-search {
+  flex: 1 1 14rem;
+  margin: 0; /* cancel Pico's default input margins inside the bar */
+  height: 2.75rem;
+  padding-block: 0;
+}
+.mrp-due-today-btn {
+  display: inline-flex;
+  align-items: center; /* vertically centre the label within the button */
+  white-space: nowrap;
+  height: 2.75rem;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-primary);
+  color: var(--pico-primary);
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mrp-due-today-btn:hover {
+  background: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+}
+.mrp-due-today-btn.active {
+  background: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+}
+.mrp-filter-empty {
+  align-self: center; /* keep the hint centred even though the row stretches */
+  color: var(--pico-muted-color);
+  font-style: italic;
+}
+
+/* "Close terminal on success" toggle on the Run page (issue #59). It sits on
+   its own line below the Copy command button, with breathing room, rather than
+   crowding up against it (issue #64). */
+.mrp-autoclose-label {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.mrp-autoclose-label input {
+  margin: 0;
+}
+
+/* One-shot (non-recurring) task marker + create-form checkbox (issue #67). */
+mark.one-shot-tag {
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.1em 0.45em;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.mrp-one-shot-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.mrp-one-shot-label input {
+  margin: 0;
+}
+
+/* ---- html2sexp converter ---- */
+.h2s-result-wrap { margin-top: 1rem; }
+.h2s-result-head { display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .3rem; }
+.h2s-fmt-label { font-family: monospace; opacity: .7; }
+.h2s-code { display: block; white-space: pre; overflow-x: auto; line-height: 1.45;
+  font-family: 'DejaVu Sans Mono', ui-monospace, 'Courier New', monospace; }
+.h2s-error { color: var(--pico-del-color, #c0392b); font-weight: 600; }
+.copy-btn { font-size: .85rem; padding: .25rem .7rem; }
+.copy-btn.copied { background: #2e7d32; color: #fff; }
+/* Lisp token colours - readable in both Pico light and dark */
+.tok-paren { opacity: .55; }
+.tok-keyword { color: #1a7f8c; }
+.tok-tag { color: #8250df; font-weight: 600; }
+.tok-string { color: #b07000; }
+.tok-number { color: #1a7f8c; }
+.tok-symbol { color: inherit; }

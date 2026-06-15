@@ -1,0 +1,27 @@
+name: CI
+
+# Self-hosted Nix CI on the nktags-ci box (github-nix-ci runner). flake-check
+# builds the app system on the pinned SBCL via `nix flake check`. Private flake
+# inputs (pauldist-nix-importer, html2sexp) are fetched via nix-github-token. No
+# JS actions (the runner's node is an unpatched FHS binary on NixOS): a plain
+# run: step clones the pushed commit. runs-on label is nktags-ci.
+on:
+  push:
+
+jobs:
+  flake-check:
+    runs-on: [nktags-ci]
+    steps:
+      - name: Checkout pushed commit (no JS action)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/${GITHUB_REPOSITORY##*/}-$GITHUB_SHA"
+          rm -rf "$work"
+          git clone --no-tags "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}" "$work"
+          git -C "$work" checkout --detach "$GITHUB_SHA"
+          echo "WORK=$work" >> "$GITHUB_ENV"
+
+      - name: nix flake check (build the app)
+        run: nix flake check -L "$WORK"

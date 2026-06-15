@@ -1,0 +1,61 @@
+{
+  "nodes": {
+    "html2sexp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781538681,
+        "narHash": "sha256-mjFLhZ5uLfmnlYcOYsKOSnaPTTv23lNPKcFG4+7OSNA=",
+        "owner": "kisp",
+        "repo": "html2sexp",
+        "rev": "b17cb6a3213d3634511e6de3167d79c39d3f0ae3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kisp",
+        "repo": "html2sexp",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1781216227,
+        "narHash": "sha256-9mUW6gNwoN2SWc/l0fW4svPNOulXLl8ijqKyeSOGgJE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "a0374025a863d007d98e3297f6aa46cc3141c2f0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-26.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "pauldist-nix-importer": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781536745,
+        "narHash": "sha256-jeXzcnYLGvVgEzENX4okXjPTCXajjJoZqns8iliJmhQ=",
+        "owner": "kisp",
+        "repo": "pauldist-nix-importer",
+        "rev": "adc348fc12172ec297808742895266fcd16ebafe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kisp",
+        "repo": "pauldist-nix-importer",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "html2sexp-src": "html2sexp-src",
+        "nixpkgs": "nixpkgs",
+        "pauldist-nix-importer": "pauldist-nix-importer"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
