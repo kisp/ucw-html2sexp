@@ -474,3 +474,10 @@ input.h2s-fmt-yaclml  { background-color: #9a82c7; }
 input.h2s-fmt-who:hover    { background-color: #5e83c2; }
 input.h2s-fmt-markup:hover { background-color: #4f9573; }
 input.h2s-fmt-yaclml:hover { background-color: #8a72b8; }
+
+/* Active dialect button: a subtle ring marks the format the auto-update /
+   Ctrl+Enter will (re)convert in. */
+input.h2s-fmt-active {
+  box-shadow: 0 0 0 2px var(--pico-background-color, #fff),
+              0 0 0 4px currentColor;
+}

@@ -121,7 +121,8 @@ and return FORMS as a list. If SEXP is not that wrapper, return (list SEXP)."
     ("List"                . "<ul><li>one</li><li>two</li><li>three</li></ul>")
     ("Form"                . "<form action=\"/submit\" method=\"post\"><label>Name <input type=\"text\" name=\"n\"></label> <button>Go</button></form>")
     ("Table"               . "<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>")
-    ("Figure + image"      . "<figure><img src=\"cat.jpg\" alt=\"a cat\"><figcaption>A cat.</figcaption></figure>"))
+    ("Figure + image"      . "<figure><img src=\"cat.jpg\" alt=\"a cat\"><figcaption>A cat.</figcaption></figure>")
+    ("SVG"                 . "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"gold\"/><path d=\"M8 13a4 4 0 0 0 8 0\" stroke=\"black\" fill=\"none\"/></svg>"))
   "Prepared HTML snippets offered in the examples dropdown.")
 
 (defcomponent ucw-html2sexp-window (simple-window-component)
@@ -135,20 +136,30 @@ and return FORMS as a list. If SEXP is not that wrapper, return (list SEXP)."
    :doctype nil
    :stylesheet (list "pico.min.css" "screen.css")
    :javascript (list (list :src "ucw-html2sexp-theme.js")
-                     (list :src "ucw-html2sexp-clipboard.js"))))
+                     (list :src "ucw-html2sexp-clipboard.js")
+                     (list :src "ucw-html2sexp-keys.js"))))
+
+(defun h2s-html->sexp (html fmt)
+  "Parse HTML to a single document s-exp in FMT (:cl-who/:cl-markup/:yaclml)."
+  (ecase fmt
+    (:cl-who (html2sexp:html2cl-who html))
+    (:cl-markup (html2sexp:html2cl-markup html))
+    (:yaclml (html2sexp:html2yaclml html))))
+
+(defun h2s-colorize-html (html fmt)
+  "Full pipeline: HTML string -> colorized HTML of the unfolded forms. May
+signal - e.g. yaclml predates HTML5 and has no figcaption/header/... tags, so
+converting such input to :yaclml signals an undefined-tag error (kucw-yaclml#4),
+which h2s-convert catches into the error pane."
+  (colorize-forms (h2s-unfold (h2s-html->sexp html fmt))))
 
 (defun h2s-convert (self fmt)
   "Convert the pasted HTML to FMT and store the colorized result (or an error).
 The (:html (:head ...) (:body ...)) wrapper is unfolded to just the pasted forms."
   (setf (fmt-of self) fmt)
   (handler-case
-      (let* ((html (or (html-of self) ""))
-             (sexp (ecase fmt
-                     (:cl-who (html2sexp:html2cl-who html))
-                     (:cl-markup (html2sexp:html2cl-markup html))
-                     (:yaclml (html2sexp:html2yaclml html)))))
-        (setf (result-of self) (colorize-forms (h2s-unfold sexp))
-              (err-of self) nil))
+      (setf (result-of self) (h2s-colorize-html (or (html-of self) "") fmt)
+            (err-of self) nil)
     (error (e)
       (setf (result-of self) nil
             (err-of self) (princ-to-string e)))))
@@ -165,6 +176,14 @@ The (:html (:head ...) (:body ...)) wrapper is unfolded to just the pasted forms
 to a fresh home page."
   (ucw::application.url-prefix (ucw::context.application *context*)))
 
+(defun h2s-fmt-class (self base fmt)
+  "BASE plus an active marker when FMT is the window's current format. The marker
+class lets screen.css highlight the active dialect and lets keys.js know which
+button Ctrl+Enter should trigger."
+  (if (eq (fmt-of self) fmt)
+      (concatenate 'string base " h2s-fmt-active")
+      base))
+
 (defmethod render ((self ucw-html2sexp-window))
   (<h2s:header :class "container"
     (<h2s:nav
@@ -176,28 +195,37 @@ to a fresh home page."
     (<:p "Paste HTML and convert it to a Lisp s-expression in "
          (<:code "cl-who") ", " (<:code "cl-markup") " or " (<:code "yaclml")
          " notation.")
-    ;; #h2s-app is the Unpoly target: a format button swaps just this fragment
-    ;; (up-scroll=false), so the page does not jump back to the top when you
-    ;; switch e.g. cl-who -> cl-markup.
+    ;; #h2s-app is the Unpoly target: a format button (or the debounced
+    ;; up-autosubmit on the textarea) swaps just this fragment (up-scroll=false),
+    ;; so the page does not jump back to the top. The form's default :action
+    ;; converts in the CURRENT dialect (fmt-of) - that is what up-autosubmit and
+    ;; Ctrl+Enter trigger; the buttons override it to switch dialect.
     (<:div :id "h2s-app"
-      (<ucw:form (@ :up-submit "true" :up-target "#h2s-app" :up-scroll "false")
+      (<ucw:form :action (h2s-convert self (fmt-of self))
+        (@ :up-submit "true" :up-target "#h2s-app" :up-scroll "false")
         (<:p (<:label "Try an example: "
                (<ucw:select :accessor (example-of self) :on-change (h2s-load-example self)
                  (<ucw:option :value "" "- choose -")
                  (dolist (ex +h2s-examples+)
                    (<ucw:option :value (cdr ex) (<:as-html (car ex)))))))
+        ;; up-autosubmit re-converts ~600ms after you stop typing; the stable id
+        ;; lets Unpoly keep focus + caret across the fragment swap.
         (<ucw:textarea :accessor (html-of self) :rows "10"
-                       (@ :placeholder "<div class=\"greeting\">hello</div>"
+                       (@ :id "h2s-html"
+                          :up-autosubmit "true"
+                          :up-watch-delay "600"
+                          :up-watch-event "input"
+                          :placeholder "<div class=\"greeting\">hello</div>  (Ctrl+Enter to convert now)"
                           :spellcheck "false"
                           :style "width:100%;font-family:monospace"))
         (<:p
-         (<ucw:input :type "submit" :class "h2s-fmt-who"
+         (<ucw:input :type "submit" :class (h2s-fmt-class self "h2s-fmt-who" :cl-who)
                      :action (h2s-convert self :cl-who) :value "cl-who")
          " "
-         (<ucw:input :type "submit" :class "h2s-fmt-markup"
+         (<ucw:input :type "submit" :class (h2s-fmt-class self "h2s-fmt-markup" :cl-markup)
                      :action (h2s-convert self :cl-markup) :value "cl-markup")
          " "
-         (<ucw:input :type "submit" :class "h2s-fmt-yaclml"
+         (<ucw:input :type "submit" :class (h2s-fmt-class self "h2s-fmt-yaclml" :yaclml)
                      :action (h2s-convert self :yaclml) :value "yaclml")))
       (when (err-of self)
         (<:p :class "h2s-error" (@ :role "alert") (<:as-html (err-of self))))
