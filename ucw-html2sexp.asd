@@ -9,8 +9,7 @@
                (read vers))
   :components ((:static-file "version" :pathname #p"version.lisp-expr")
                (:file "package")
-               (:file "html5-tags" :depends-on ("package"))
-               (:file "web" :depends-on ("package" "html5-tags")))
+               (:file "web" :depends-on ("package")))
   :depends-on (:kucw
                :ucw-apps-sprotte-common
                :ucw-github-auth

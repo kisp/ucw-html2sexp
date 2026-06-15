@@ -185,13 +185,13 @@ button Ctrl+Enter should trigger."
       base))
 
 (defmethod render ((self ucw-html2sexp-window))
-  (<h2s:header :class "container"
-    (<h2s:nav
+  (<:header :class "container"
+    (<:nav
       (<:ul (<:li (<:a :href (h2s-home-url) (<:strong "html2sexp")))
             (<:li (<:small "HTML to Lisp s-expressions")))
       ;; theme.js appends the light/dark toggle to this last <ul>.
       (<:ul)))
-  (<h2s:main :class "container"
+  (<:main :class "container"
     (<:p "Paste HTML and convert it to a Lisp s-expression in "
          (<:code "cl-who") ", " (<:code "cl-markup") " or " (<:code "yaclml")
          " notation.")
