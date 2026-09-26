@@ -26,18 +26,17 @@
 (deftest unfold-passthrough-non-document
   (is (equal '((:p "x")) (ucw-html2sexp::h2s-unfold '(:p "x")))))
 
-;;; The full HTML -> colorized-HTML pipeline. cl-who/cl-markup are tag-agnostic,
-;;; but yaclml predates HTML5 and has no figcaption tag, so converting it to
-;;; :yaclml signals an undefined-tag error (kucw-yaclml#4). The UI catches that
-;;; into its error pane; here we just lock in that it does signal.
+;;; The full HTML -> colorized-HTML pipeline. cl-who/cl-markup are tag-agnostic;
+;;; yaclml needs each tag defined, and kucw-yaclml >= 0.0.11 ships the HTML5 tags
+;;; (kucw-yaclml#4), so figcaption now converts to :yaclml as well.
 
 (defun signals-error-p (thunk)
   (typep (handler-case (progn (funcall thunk) nil) (error (e) e)) 'error))
 
-(deftest yaclml-html5-tag-signals-error
-  (is (signals-error-p
-       (lambda () (ucw-html2sexp::h2s-colorize-html
-                   "<figure><figcaption>x</figcaption></figure>" :yaclml)))))
+(deftest yaclml-html5-tag-ok
+  (is (not (signals-error-p
+            (lambda () (ucw-html2sexp::h2s-colorize-html
+                        "<figure><figcaption>x</figcaption></figure>" :yaclml))))))
 
 (deftest cl-who-html5-tag-ok
   (let ((html (ucw-html2sexp::h2s-colorize-html

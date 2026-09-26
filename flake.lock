@@ -35,11 +35,11 @@
     "pauldist-nix-importer": {
       "flake": false,
       "locked": {
-        "lastModified": 1781536745,
-        "narHash": "sha256-jeXzcnYLGvVgEzENX4okXjPTCXajjJoZqns8iliJmhQ=",
+        "lastModified": 1790308801,
+        "narHash": "sha256-VFVIUbP4kW08WkYr2ogPoDfgQjR3rQDRxh0cQJopGVs=",
         "owner": "kisp",
         "repo": "pauldist-nix-importer",
-        "rev": "adc348fc12172ec297808742895266fcd16ebafe",
+        "rev": "e046530e829a1687a32ec35d37adc1acc9d1bd2b",
         "type": "github"
       },
       "original": {
